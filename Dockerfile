@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.0.0-sdk AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 
 ARG BUILDCONFIG=RELEASE
 
@@ -11,12 +11,12 @@ COPY . .
 RUN dotnet publish -c $BUILDCONFIG -o out
 
 # build runtime image
-FROM microsoft/dotnet:2.0.0-runtime 
+FROM mcr.microsoft.com/dotnet/runtime:3.1-buster-slim
 WORKDIR /app
 COPY --from=build /build/out ./
 
 # Install Cron
-RUN apt-get update -qq && apt-get -y install cron -qq --force-yes
+RUN apt-get update -qq && apt-get -y install cron -qq --allow-unauthenticated
 
 # Add export environment variable script and schedule
 COPY *.sh ./
